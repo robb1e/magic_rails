@@ -61,7 +61,7 @@ One further refactor could be done here, and that is to move the query logic out
 Here's what [Bryan Helmkamp has to say on query objects](http://blog.codeclimate.com/blog/2012/10/17/7-ways-to-decompose-fat-activerecord-models/) in his excellent write up on fat ActiveRecord models. Bryan here rightfully points out that once in a purpose object, they warrant little attention to unit testing. Now is the right time to use the database to ensure the right data set is being returned and that N+1 queries are not being performed. 
 
 
-## APIs should not expose the database
+## APIs should not expose the schema
 
 When the only consumer of an applications data model is the applications views then the design is fluid and maleable. Once an application exposes an API to more than one client, and especially if that client is on a different release cycle to the server, such as iPhone application, data models become rigid. Rails discourages N-tier architecture to the benefit of development speed but APIs are contracts between a server and it's client and can be difficult to change. Relying on the default JSON serialisation of an object will only get you so far. At some point a refactor will take place that will cause a breaking change. It could be something simple such as renaming a column, or moving responsibilities from one class to another. 
 
@@ -112,6 +112,12 @@ Where `PostPresenter` may look something like:
 ## URI paths should not include a version
 
 I don't like seeing routes like `/api/v1/posts` and from what we've seen above, we can get rid of some of the issues here. 
+
+The `/api` part I can forgive as I can read this as 'stable' rather than mixing in processing for a web application, or supplying JS/JSON for the application client code. I'd rather be able to access `/posts.json` in an application but I've seen that this can be difficult to introduce in an existing application if those routes are already used by the applications Javascript. 
+
+The `v1` part of the path is less forgivable. A URI should define a resource and the version of the resource should be meta-data not a fundamental part of the resource itself. In essense, different versions of `Post` are the same resource, not separate.  There are plenty of tutuorials on the web which encourage the developer to create controllers like `Api::V1::PostsController` but take a look at products with APIs, how many have paths beyond `v1` or `v2`? Foursquare is a case in point. Their current API is hosted at `http://api.foursqure.com/v2/venues` and the client can pass a request query parameter of `v=yyyymmdd` to get the service to respond to a known response format. It's almost shows a major and minor version. 
+
+
 
 ## Using partials like a boss by using view classes
 
