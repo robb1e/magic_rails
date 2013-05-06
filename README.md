@@ -10,7 +10,7 @@ Extending `ActiveRecord::Base` leaks a powerful API throughout an application wh
 
     Post.where(author: author_id).limit(20).order("created_at DESC").each { ... }
     
-For me this is a design violation as well as breaking the "Law of Demeter". The example above tells me structure of the schema that the calling class has no business knowing. It also makes testing using stubs ugly and encourages testing against the database directly. A test would have to chain three methods to stub a return value. It's brittle, as in it's susectible to breaking due to changes outside of the class.  For me it also fails from a narative perspective in that it doesn't susinctly reveal the intent of this part of the application.
+For me this is a design violation as well as breaking the "Law of Demeter". The example above tells me structure of the schema that the calling class has no business knowing. It also makes testing using stubs ugly and encourages testing against the database directly. A test would have to chain three methods to stub a return value. It's brittle, as in it's susceptible to breaking due to changes outside of the class.  For me it also fails from a narative perspective in that it doesn't susinctly reveal the intent of this part of the application.
 
 If we were testing this and attempting to use stubs, we'd have to write something like the below.  You can see how this is at best cumbersome, but also fragile.
 
@@ -63,6 +63,7 @@ There are a few advantages to this refactor:
 - Any changes to the implementation of what `latest_for_author` are encapsulated in one place
 - The method describes the intent more than the implementation
 - Stubbing in the tests are easier as there is one clear dependency of a method chain
+- Testing the database is encouraged only in the class hitting the database
 
 One further refactor could be done here, and that is to move the query logic out of the Post class once more, but this time into a purpose built query Object:
 
